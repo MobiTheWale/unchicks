@@ -30,7 +30,7 @@ public class SecurityConfig {
     @Bean JwtDecoder jwtDecoder() { return NimbusJwtDecoder.withSecretKey(key).macAlgorithm(MacAlgorithm.HS256).build(); }
 
     @Bean SecurityFilterChain chain(HttpSecurity http) throws Exception {
-        http.csrf(c -> c.disable())
+        http
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(a -> a
                 .requestMatchers("/api/auth/**").permitAll()
