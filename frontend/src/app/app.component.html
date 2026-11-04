@@ -1,0 +1,110 @@
+<header class="top">
+  <div class="bar">
+    <h1>UnChicks</h1>
+    @if (user(); as u) {
+      <span class="who">{{ u }} <button class="link" (click)="logout()">Abmelden</button></span>
+    } @else {
+      <button class="login" (click)="authMode.set('login')">Anmelden</button>
+    }
+  </div>
+  <p>Welches Hähnchen hat gerade gewonnen?</p>
+  <nav>
+    <button [class.on]="tab() === 'feed'" (click)="tab.set('feed')">Feed</button>
+    <button [class.on]="tab() === 'mine'" (click)="tab.set('mine')">Meine</button>
+    <button [class.on]="tab() === 'chickens'" (click)="tab.set('chickens')">Hähnchen</button>
+  </nav>
+</header>
+
+<main>
+  @if (error() && !authMode()) { <p class="err" role="alert">{{ error() }}</p> }
+
+  @if (tab() !== 'chickens') {
+    @if (tab() === 'mine' && !user()) {
+      <p class="empty">Melde dich an, um deine eigenen Check-ins zu sehen.<br><button class="primary" (click)="authMode.set('login')">Anmelden</button></p>
+    } @else {
+      @for (f of list(); track f.id) {
+        <article class="card">
+          <div class="avatar" aria-hidden="true">{{ f.username[0].toUpperCase() }}</div>
+          <div class="body">
+            <p><strong>{{ f.username }}</strong> hat <a href="javascript:void(0)" (click)="openCheckIn(f.chickenId)">{{ f.chickenName }}</a>
+              @if (f.vendor) { von {{ f.vendor }} } eingecheckt</p>
+            <p class="stars" [attr.aria-label]="f.rating + ' von 5 Keulen'">
+              @for (s of stars; track s) { <span [class.off]="s > f.rating">🍗</span> }
+            </p>
+            @if (f.comment) { <p class="quote">{{ f.comment }}</p> }
+            <time>{{ f.createdAt | date:'dd.MM.yyyy, HH:mm' }}</time>
+          </div>
+        </article>
+      } @empty {
+        <p class="empty">{{ tab() === 'mine' ? 'Du hast noch nichts eingecheckt.' : 'Noch kein Check-in. Wähle unter „Hähnchen“ eins aus.' }}</p>
+      }
+    }
+  } @else {
+    <button class="primary wide" (click)="addClicked()">Neues Hähnchen anlegen</button>
+    @for (c of chickens(); track c.id) {
+      <article class="card">
+        <div class="score"><b>{{ c.avgRating | number:'1.1-1' }}</b><small>{{ c.checkIns }} Check-ins</small></div>
+        <div class="body">
+          <h2>{{ c.name }}</h2>
+          <p class="meta">{{ c.vendor }}@if (c.vendor && c.city) {, }{{ c.city }}</p>
+          @if (c.description) { <p>{{ c.description }}</p> }
+          <button class="primary" (click)="openCheckIn(c.id)">Einchecken</button>
+        </div>
+      </article>
+    } @empty {
+      <p class="empty">Noch keine Hähnchen. Lege das erste an.</p>
+    }
+  }
+</main>
+
+@if (authMode(); as m) {
+  <div class="backdrop" (click)="authMode.set(null)">
+    <form class="sheet" (click)="$event.stopPropagation()" (ngSubmit)="submitAuth()">
+      <h2>{{ m === 'login' ? 'Anmelden' : 'Konto erstellen' }}</h2>
+      <label>Benutzername <input name="un" [(ngModel)]="name" autocomplete="username" maxlength="30" required></label>
+      <label>Passwort <input name="pw" type="password" [(ngModel)]="password" [attr.autocomplete]="m === 'login' ? 'current-password' : 'new-password'" minlength="8" required></label>
+      @if (error()) { <p class="err" role="alert">{{ error() }}</p> }
+      <div class="row">
+        <button type="button" (click)="authMode.set(null)">Abbrechen</button>
+        <button class="primary" [disabled]="!name.trim() || password.length < 8">{{ m === 'login' ? 'Anmelden' : 'Registrieren' }}</button>
+      </div>
+      <button type="button" class="link" (click)="error.set(''); authMode.set(m === 'login' ? 'register' : 'login')">
+        {{ m === 'login' ? 'Noch kein Konto? Jetzt registrieren' : 'Schon registriert? Anmelden' }}
+      </button>
+    </form>
+  </div>
+}
+
+@if (target(); as t) {
+  <div class="backdrop" (click)="target.set(null)">
+    <form class="sheet" (click)="$event.stopPropagation()" (ngSubmit)="submitCheckIn()">
+      <h2>{{ t.name }} einchecken</h2>
+      <div class="pick" role="radiogroup" aria-label="Bewertung">
+        @for (s of stars; track s) {
+          <button type="button" role="radio" [attr.aria-checked]="rating === s" [class.off]="s > rating" (click)="rating = s">🍗</button>
+        }
+      </div>
+      <label>Kommentar <textarea name="c" [(ngModel)]="comment" rows="3" maxlength="1000" placeholder="Knusprigkeit, Haut, Saftigkeit…"></textarea></label>
+      <div class="row">
+        <button type="button" (click)="target.set(null)">Abbrechen</button>
+        <button class="primary" [disabled]="!rating">Check-in speichern</button>
+      </div>
+    </form>
+  </div>
+}
+
+@if (adding()) {
+  <div class="backdrop" (click)="adding.set(false)">
+    <form class="sheet" (click)="$event.stopPropagation()" (ngSubmit)="submitChicken()">
+      <h2>Neues Hähnchen</h2>
+      <label>Name <input name="n" [(ngModel)]="draft.name" maxlength="120" required></label>
+      <label>Verkäufer <input name="v" [(ngModel)]="draft.vendor" maxlength="120"></label>
+      <label>Stadt <input name="s" [(ngModel)]="draft.city" maxlength="120"></label>
+      <label>Beschreibung <textarea name="d" [(ngModel)]="draft.description" rows="2" maxlength="1000"></textarea></label>
+      <div class="row">
+        <button type="button" (click)="adding.set(false)">Abbrechen</button>
+        <button class="primary" [disabled]="!draft.name?.trim()">Hähnchen speichern</button>
+      </div>
+    </form>
+  </div>
+}

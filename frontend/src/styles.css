@@ -1,0 +1,47 @@
+:root {
+  --crust: #f0a91d; --ember: #c8381f; --ink: #231a14; --fat: #fff6dc;
+  --bg: #efeae1; --card: #fffdf8; --line: #ded5c3; --muted: #6d6256;
+  font-family: "Avenir Next", "Segoe UI", Roboto, system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #1b1511; --card: #271e18; --line: #3d3128; --ink: #f6ead6; --muted: #b5a690; --fat: #3a2a14; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); line-height: 1.45; }
+h1, h2 { font-family: "Rockwell", "Roboto Slab", Georgia, serif; margin: 0; }
+.top { background: var(--crust); color: #231a14; padding: 1.4rem 1rem 0; text-align: left; max-width: 100%; }
+.top h1 { font-size: 2.4rem; letter-spacing: -.02em; max-width: 640px; margin: 0 auto; }
+.top p { max-width: 640px; margin: .2rem auto 1rem; }
+.top nav { max-width: 640px; margin: 0 auto; display: flex; gap: .25rem; }
+.top nav button { flex: 1; background: transparent; border: 0; padding: .8rem; font: inherit; font-weight: 700; color: #231a14; border-bottom: 4px solid transparent; cursor: pointer; }
+.top nav button.on { border-color: #231a14; }
+main { max-width: 640px; margin: 0 auto; padding: 1rem; display: grid; gap: .75rem; }
+.card { display: flex; gap: .9rem; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 1rem; }
+.body { flex: 1; min-width: 0; } .body p { margin: .2rem 0; } .body h2 { font-size: 1.2rem; }
+.avatar { width: 42px; height: 42px; flex: none; border-radius: 50%; background: var(--ember); color: #fff; display: grid; place-items: center; font-weight: 800; }
+.score { width: 64px; flex: none; text-align: center; background: var(--fat); border-radius: 10px; padding: .5rem 0; height: fit-content; }
+.score b { display: block; font-size: 1.6rem; font-family: Georgia, serif; } .score small { font-size: .7rem; color: var(--muted); }
+.stars span.off, .pick button.off { filter: grayscale(1) opacity(.3); }
+.quote { border-left: 3px solid var(--crust); padding-left: .6rem; font-style: italic; }
+.meta, time { color: var(--muted); font-size: .85rem; }
+a { color: var(--ember); font-weight: 700; text-decoration: none; } a:hover { text-decoration: underline; }
+button { font: inherit; cursor: pointer; border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 10px; padding: .55rem 1rem; }
+button.primary { background: var(--ember); border-color: var(--ember); color: #fff; font-weight: 700; margin-top: .4rem; }
+button:disabled { opacity: .45; cursor: not-allowed; } button.wide { width: 100%; margin: 0; padding: .8rem; }
+:focus-visible { outline: 3px solid var(--ember); outline-offset: 2px; }
+.empty { text-align: center; color: var(--muted); padding: 2rem 0; }
+.err { background: #fde2dd; color: #7a1a0a; padding: .7rem 1rem; border-radius: 10px; margin: 0; }
+.backdrop { position: fixed; inset: 0; background: #000a; display: grid; align-items: end; justify-items: center; z-index: 10; }
+.sheet { background: var(--card); width: min(560px, 100%); padding: 1.3rem; border-radius: 18px 18px 0 0; display: grid; gap: .8rem; animation: up .18s ease-out; }
+@keyframes up { from { transform: translateY(40px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .sheet { animation: none; } }
+label { display: grid; gap: .25rem; font-weight: 600; font-size: .9rem; }
+input, textarea { font: inherit; padding: .6rem; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); }
+.pick { display: flex; gap: .3rem; justify-content: center; } .pick button { font-size: 2rem; border: 0; background: none; padding: .1rem .3rem; }
+.row { display: flex; gap: .6rem; justify-content: flex-end; } .row .primary { margin: 0; }
+.top .bar { max-width: 640px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+.top .who { font-weight: 700; display: flex; gap: .6rem; align-items: center; }
+.top .login { background: #231a14; color: #fff; border-color: #231a14; font-weight: 700; }
+button.link { background: none; border: 0; padding: 0; color: var(--ember); font-weight: 700; text-decoration: underline; }
+.top button.link { color: #231a14; font-weight: 600; }
+.sheet .err { margin: 0; }

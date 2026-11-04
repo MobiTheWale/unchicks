@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment: { POSTGRES_DB: unchicks, POSTGRES_USER: unchicks, POSTGRES_PASSWORD: unchicks }
+    volumes: [ "pgdata:/var/lib/postgresql/data" ]
+  app:
+    build: .
+    depends_on: [ db ]
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/unchicks
+      DB_USER: unchicks
+      DB_PASSWORD: unchicks
+      JWT_SECRET: bitte-aendern-mindestens-32-zeichen-lang
+    ports: [ "8080:8080" ]
+volumes: { pgdata: {} }
